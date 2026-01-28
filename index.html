@@ -14,7 +14,6 @@
       overflow-x:hidden;
     }
 
-    /* ===== TOP NAV ===== */
     header{
       width:100%;
       display:flex;
@@ -53,7 +52,6 @@
       width:100%;
     }
 
-    /* ===== MAIN ===== */
     .page{
       min-height:calc(100vh - 80px);
       display:grid;
@@ -74,11 +72,6 @@
       border-radius:18px;
       display:block;
       margin:0 auto;
-      transition: transform 180ms ease;
-    }
-
-    .wrap:hover canvas{
-      transform: translateY(-1px);
     }
   </style>
 </head>
@@ -115,7 +108,6 @@
     screenMain: "#dff6f3",
     screenLite: "#f0fffd",
     bg: "#f6f4ea",
-    shadow: "#ece9f3",
     text: "#6b5fa7"
   };
 
@@ -124,10 +116,8 @@
   const messages = ["hello world", "welcome"];
   let msgIndex = 0;
   let typedText = "";
-  let typingTimer = null;
-  let cursorTimer = null;
-  let cycleTimer = null;
   let showCursor = true;
+  let typingTimer, cursorTimer, cycleTimer;
 
   function rect(x,y,w,h,c){
     ctx.fillStyle = c;
@@ -135,10 +125,7 @@
   }
 
   function draw(){
-    const W = canvas.width / P;
-    const H = canvas.height / P;
-
-    rect(0,0,W,H,COL.bg);
+    rect(0,0,80,80,COL.bg);
 
     /* ===== MONITOR ===== */
     rect(10,6,60,34,COL.outline);
@@ -150,29 +137,14 @@
     rect(17,13,46,20,COL.screenLite);
 
     if(isHovering){
-      rect(18,14,44,18,"#eefbff");
-      ctx.save();
-      ctx.shadowColor = "rgba(200,190,255,0.9)";
-      ctx.shadowBlur = 18;
-      ctx.fillStyle = "#eefbff";
-      ctx.fillRect(18*P,14*P,44*P,18*P);
-      ctx.restore();
-    } else {
-      rect(18,14,44,18,COL.screenMain);
-    }
-
-    if(isHovering){
       ctx.fillStyle = COL.text;
       ctx.font = `${5*P}px monospace`;
       ctx.textBaseline = "top";
       ctx.fillText(
         typedText + (showCursor ? "▮" : ""),
-        20 * P,
-        20 * P
+        20*P,20*P
       );
     }
-
-    rect(60,13,3,3,"#ffffff");
 
     /* ===== STAND ===== */
     rect(37,40,6,2,COL.outline);
@@ -180,31 +152,30 @@
     rect(36,44,8,4,COL.outline);
     rect(37,45,6,4,COL.mid);
 
-    /* ===== KEYBOARD ===== */
-    rect(10,52,60,10,COL.outline);
-    rect(11,53,58,8,COL.main);
-    rect(12,54,56,6,COL.mid);
+    /* ===== KEYBOARD (moved UP, no gap) ===== */
+    rect(10,48,60,10,COL.outline);
+    rect(11,49,58,8,COL.main);
+    rect(12,50,56,6,COL.mid);
 
-    for(let x=14;x<=62;x+=6) rect(x,55,4,2,COL.lite);
-    for(let x=16;x<=60;x+=6) rect(x,58,4,2,COL.lite);
+    for(let x=14;x<=62;x+=6) rect(x,51,4,2,COL.lite);
+    for(let x=16;x<=60;x+=6) rect(x,54,4,2,COL.lite);
 
     /* ===== MOUSE ===== */
-    const mx=66,my=66;
+    const mx=66,my=64;
     rect(mx,my,8,12,COL.outline);
     rect(mx+1,my+1,6,10,COL.main);
     rect(mx+3,my+3,2,2,COL.lite);
 
-    /* ===== MOUSE WIRE ===== */
+    /* ===== MOUSE WIRE (curves around keyboard right side) ===== */
     const wire = [
-      [66,66],[65,66],[64,66],[63,66],[62,66],
-      [61,65],[60,64],[59,63],[58,62],
-      [57,61],[56,60],[55,59],[54,58],
-      [53,57],[52,56],[51,55],
-      [50,54],[49,53],[48,52],
-      [47,51],[46,50],[45,49],
-      [44,48],[43,47],[42,46],
-      [41,45],[40,44],[39,43],
-      [38,42],[37,41]
+      [66,64],[65,64],[64,64],
+      [63,63],[62,62],[61,61],
+      [60,60],[60,59],[60,58],
+      [60,57],[60,56],
+      [59,55],[58,54],[57,53],
+      [56,52],[55,51],[54,50],
+      [53,49],[52,48],[51,47],
+      [50,46],[49,45],[48,44]
     ];
     wire.forEach(([x,y]) => rect(x,y,1,1,COL.outline));
   }
@@ -259,8 +230,6 @@
     showCursor=true;
     draw();
   });
-
-  window.addEventListener("resize",draw);
 </script>
 
 </body>

@@ -77,10 +77,6 @@
 </head>
 
 <body>
-  <div class="wrap" id="wrap">
-    <div class="tooltip" id="tip">✨ hover the screen ✨</div>
-    <canvas id="art" width="560" height="560"></canvas>
-  </div>
 
   <script>
     const wrap = document.getElementById("wrap");
@@ -108,7 +104,7 @@
     let isHovering = false;
 
     // Typing/cycling state
-    const messages = ["hello world", "welcome", "ashwittha.dev"];
+    const messages = ["hello world", "welcome"];
     let msgIndex = 0;
     let typedText = "";
     let typingTimer = null;
@@ -262,27 +258,6 @@
 
     // Initial render
     draw();
-
-    wrap.addEventListener("mouseenter", () => {
-      isHovering = true;
-      tip.textContent = "✨ screen glow + typing ✨";
-      msgIndex = 0;
-      showCursor = true;
-      typeMessage(messages[msgIndex]);
-      startCursorBlink();
-      startCycling();
-      draw();
-    });
-
-    wrap.addEventListener("mouseleave", () => {
-      isHovering = false;
-      tip.textContent = "✨ hover the screen ✨";
-      clearTimers();
-      typedText = "";
-      showCursor = true;
-      draw();
-    });
-
     window.addEventListener("resize", draw);
   </script>
 </body>

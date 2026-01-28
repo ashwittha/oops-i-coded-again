@@ -1,61 +1,129 @@
-//This file controls the layout (header, buttons, terminal box)
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ashwittha | Contact</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pixel Computer</title>
+  <style>
+    body{
+      margin:0;
+      display:grid;
+      place-items:center;
+      min-height:100vh;
+      background:#ffffff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    canvas{
+      width:min(720px, 92vw);
+      height:auto;
+      image-rendering: pixelated; /* keep crisp when scaled */
+    }
+  </style>
 </head>
-
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="pfp">A</div>
-      <div>
-        <div class="name">Ashwittha Ganesan</div>
-        <div class="tag">Software Engineer • Builder • Coffee fan ☕️</div>
-      </div>
-    </div>
-  </header>
+  <canvas id="art" width="480" height="480"></canvas>
 
-  <main class="wrap">
-    <h1>Let’s Get In Touch!</h1>
+  <script>
+    const c = document.getElementById("art");
+    const ctx = c.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
 
-    <div class="nav">
-      <button class="cmd" data-cmd="email">email</button>
-      <span>|</span>
-      <button class="cmd" data-cmd="resume">resume</button>
-      <span>|</span>
-      <button class="cmd" data-cmd="github">github</button>
-      <span>|</span>
-      <button class="cmd" data-cmd="linkedin">linkedin</button>
-      <span>|</span>
-      <button class="cmd" data-cmd="logout">logout</button>
-      <span>|</span>
-      <button class="cmd secret" data-cmd="secret">secret</button>
-    </div>
+    // Pixel size (in canvas pixels). Increase for chunkier pixels.
+    const P = 6;
 
-    <section class="terminal">
-      <div class="terminal-top">
-        <span class="dot red"></span>
-        <span class="dot yellow"></span>
-        <span class="dot green"></span>
-        <span class="title">terminal</span>
-      </div>
+    // Palette (approx. from your image)
+    const COL = {
+      pinkDark: "#d44b89",
+      pink:     "#ff6fb0",
+      pinkMid:  "#ff8fc1",
+      pinkLite: "#ffc1dd",
+      mint:     "#bdf7ee",
+      mint2:    "#d6fff8",
+      white:    "#ffffff",
+      shadow:   "#f2f2f2"
+    };
 
-      <div id="output" class="output"></div>
+    // Helpers
+    function rect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * P, y * P, w * P, h * P);
+    }
 
-      <div class="prompt">
-        <span class="path">ashwittha.github.io:~</span>
-        <span class="user"> guest </span>
-        <span class="dollar">$</span>
-        <span class="cursor"></span>
-      </div>
-    </section>
-  </main>
+    // --- DRAW ---
+    // Layout is on a simple grid (units = "pixels" we draw as blocks).
+    // Canvas grid size here is 480/6=80 units wide & tall.
+    // Everything below is drawn in those 80x80 units.
 
-  <footer class="footer">© 2026 Ashwittha</footer>
-  <script src="script.js"></script>
+    // Background
+    rect(0, 0, 80, 80, COL.white);
+
+    // ===== MONITOR (top) =====
+    // Outer frame (layered pinks)
+    rect(18, 8, 44, 28, COL.pinkDark);   // darkest outline
+    rect(19, 9, 42, 26, COL.pink);       // main frame
+    rect(20,10, 40, 24, COL.pinkMid);    // inner frame
+    rect(21,11, 38, 22, COL.pinkLite);   // highlight ring
+
+    // Inner bezel area
+    rect(23,13, 34, 18, COL.pink);       // bezel
+    rect(24,14, 32, 16, COL.mint2);      // screen area (empty)
+    rect(25,15, 30, 14, COL.mint);       // screen center tint
+
+    // Tiny "window buttons" (top-right)
+    rect(53,14, 2, 2, COL.white);
+    rect(55,14, 1, 2, COL.white);
+
+    // ===== STAND =====
+    // Neck
+    rect(37,36, 6, 2, COL.pinkDark);
+    rect(38,37, 4, 2, COL.pink);
+    // Stem
+    rect(36,39, 8, 3, COL.pinkDark);
+    rect(37,40, 6, 3, COL.pinkMid);
+
+    // Base (layered)
+    rect(33,43, 14, 2, COL.pinkDark);
+    rect(34,44, 12, 2, COL.pink);
+    rect(35,45, 10, 2, COL.pinkMid);
+    rect(36,46,  8, 2, COL.pinkLite);
+
+    // ===== KEYBOARD =====
+    // Shadow plate
+    rect(16,56, 48, 2, COL.shadow);
+
+    // Keyboard body
+    rect(16,52, 48, 10, COL.pinkDark);
+    rect(17,53, 46,  8, COL.pink);
+    rect(18,54, 44,  6, COL.pinkMid);
+
+    // Keys grid (simple pixel keys)
+    // Row 1
+    for (let x = 19; x <= 59; x += 4) rect(x,55, 3,2, COL.pinkLite);
+    // Row 2
+    for (let x = 20; x <= 58; x += 4) rect(x,58, 3,2, COL.pinkLite);
+
+    // Space bar
+    rect(28,60, 24, 1, COL.pinkLite);
+
+    // ===== MOUSE + CABLE (right) =====
+    // Cable (blocky curve)
+    rect(52,46, 2, 1, COL.pinkDark);
+    rect(54,46, 1, 2, COL.pinkDark);
+    rect(55,48, 1, 2, COL.pinkDark);
+    rect(56,50, 1, 2, COL.pinkDark);
+    rect(57,52, 1, 2, COL.pinkDark);
+    rect(58,54, 1, 2, COL.pinkDark);
+    rect(59,56, 1, 2, COL.pinkDark);
+
+    // Mouse body
+    rect(60,58, 6, 9, COL.pinkDark);
+    rect(61,59, 4, 7, COL.pink);
+    rect(62,60, 2, 2, COL.pinkLite); // button area
+
+    // Mouse "wire" end
+    rect(62,57, 2, 1, COL.pinkDark);
+
+    // Done!
+  </script>
 </body>
 </html>

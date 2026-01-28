@@ -18,26 +18,28 @@
       place-items:center;
       background:var(--bg);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow-x:hidden; /* prevents any accidental horizontal overflow */
     }
 
-    /* Wrapper so we can show a tooltip + glow */
     .wrap{
       position:relative;
       display:inline-block;
-      padding: 18px;
+      padding: 14px;
       border-radius: 24px;
+      max-width: 100vw;
     }
 
-    /* Make the canvas scale up cleanly */
+    /* ✅ FIX: keep it fitting on screen */
     canvas{
-      width: min(860px, 94vw); /* BIGGER laptop/computer */
+      width: min(640px, 92vw);  /* was too big before */
       height: auto;
       image-rendering: pixelated;
       border-radius: 18px;
       transition: transform 180ms ease;
+      display:block;
+      margin: 0 auto;
     }
 
-    /* Hover glow + subtle “lift” */
     .wrap:hover canvas{
       transform: translateY(-2px);
       animation: pulseGlow 1.25s ease-in-out infinite;
@@ -48,12 +50,11 @@
         0 0 44px var(--glow2);
     }
 
-    /* Pop-up message */
     .tooltip{
       position:absolute;
       left:50%;
-      top:-10px;
-      transform: translate(-50%, -100%);
+      top:0;
+      transform: translate(-50%, -110%);
       background: rgba(255, 245, 252, 0.95);
       border: 1px solid rgba(255, 179, 220, 0.75);
       color:#7a2a55;
@@ -69,22 +70,20 @@
 
     .wrap:hover .tooltip{
       opacity: 1;
-      transform: translate(-50%, -108%);
+      transform: translate(-50%, -120%);
     }
 
-    /* little speech bubble nub */
     .tooltip:after{
       content:"";
       position:absolute;
       left:50%;
       bottom:-7px;
-      transform: translateX(-50%);
+      transform: translateX(-50%) rotate(45deg);
       width: 12px;
       height: 12px;
       background: rgba(255, 245, 252, 0.95);
       border-right: 1px solid rgba(255, 179, 220, 0.75);
       border-bottom: 1px solid rgba(255, 179, 220, 0.75);
-      transform: translateX(-50%) rotate(45deg);
     }
 
     @keyframes pulseGlow{
@@ -95,8 +94,8 @@
 </head>
 <body>
   <div class="wrap" id="wrap">
-    <div class="tooltip" id="tip">hi 👋 click commands above to get in touch</div>
-    <canvas id="art" width="560" height="560"></canvas>
+    <div class="tooltip" id="tip">✨ hover me ✨</div>
+    <canvas id="art" width="560" height="520"></canvas>
   </div>
 
   <script>
@@ -104,20 +103,17 @@
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
 
-    // Bigger pixel size => bigger “computer” inside canvas
-    const P = 7; // try 8 or 9 if you want chunkier
+    // Pixel scale (controls internal “chunkiness”)
+    const P = 7;
 
     // Lighter pastel palette
     const COL = {
-      // super light pinks
       pinkOutline: "#e46aa9",
       pinkMain:    "#ff93c7",
       pinkMid:     "#ffb7dd",
       pinkLite:    "#ffd7ee",
-      // minty screen
       mintMain:    "#c9fbf5",
       mintLite:    "#e6fffc",
-      // neutral
       white:       "#ffffff",
       shadow:      "#f4f4f6"
     };
@@ -128,93 +124,87 @@
     }
 
     function draw(){
-      // Grid is canvas / P in “units”
       const W = Math.floor(canvas.width / P);
       const H = Math.floor(canvas.height / P);
 
-      // background
       rect(0, 0, W, H, COL.white);
 
       // ===== MONITOR (top) =====
-      // Outer frame (layered)
-      rect(10, 8, 60, 34, COL.pinkOutline);
-      rect(11, 9, 58, 32, COL.pinkMain);
-      rect(12,10, 56, 30, COL.pinkMid);
-      rect(13,11, 54, 28, COL.pinkLite);
+      rect(10, 6, 60, 34, COL.pinkOutline);
+      rect(11, 7, 58, 32, COL.pinkMain);
+      rect(12, 8, 56, 30, COL.pinkMid);
+      rect(13, 9, 54, 28, COL.pinkLite);
 
-      // Inner bezel + screen (EMPTY screen)
-      rect(16,14, 48, 22, COL.pinkMain);  // bezel
-      rect(17,15, 46, 20, COL.mintLite);  // screen border
-      rect(18,16, 44, 18, COL.mintMain);  // screen fill
+      rect(16,12, 48, 22, COL.pinkMain);  // bezel
+      rect(17,13, 46, 20, COL.mintLite);  // screen border
+      rect(18,14, 44, 18, COL.mintMain);  // screen fill (empty)
+      rect(60,13, 3, 3, COL.white);        // little corner button
 
-      // Little “window corner” (top right)
-      rect(60,15, 3, 3, COL.white);
+      // ===== STAND (slightly shorter) =====
+      rect(37,40, 6, 2, COL.pinkOutline);
+      rect(38,41, 4, 3, COL.pinkMain);
 
-      // ===== STAND =====
-      // Neck
-      rect(37,42, 6, 2, COL.pinkOutline);
-      rect(38,43, 4, 3, COL.pinkMain);
+      rect(36,44, 8, 4, COL.pinkOutline);
+      rect(37,45, 6, 4, COL.pinkMid);
 
-      // Stem
-      rect(36,46, 8, 4, COL.pinkOutline);
-      rect(37,47, 6, 4, COL.pinkMid);
+      rect(32,50, 16, 2, COL.pinkOutline);
+      rect(33,51, 14, 2, COL.pinkMain);
+      rect(34,52, 12, 2, COL.pinkMid);
+      rect(35,53, 10, 2, COL.pinkLite);
 
-      // Base (layered)
-      rect(32,52, 16, 2, COL.pinkOutline);
-      rect(33,53, 14, 2, COL.pinkMain);
-      rect(34,54, 12, 2, COL.pinkMid);
-      rect(35,55, 10, 2, COL.pinkLite);
+      // ✅ FIX: keyboard moved UP (less space to monitor)
+      // ===== KEYBOARD =====
+      rect(10,60, 60, 2, COL.shadow);
+      rect(10,52, 60, 10, COL.pinkOutline);
+      rect(11,53, 58,  8, COL.pinkMain);
+      rect(12,54, 56,  6, COL.pinkMid);
 
-      // ===== KEYBOARD (bigger) =====
-      // Shadow plate
-      rect(10,74, 60, 2, COL.shadow);
+      for (let x = 14; x <= 62; x += 6) rect(x,55, 4, 2, COL.pinkLite);
+      for (let x = 16; x <= 60; x += 6) rect(x,58, 4, 2, COL.pinkLite);
+      rect(26,60, 28, 1, COL.pinkLite);
 
-      // Keyboard body
-      rect(10,64, 60, 12, COL.pinkOutline);
-      rect(11,65, 58, 10, COL.pinkMain);
-      rect(12,66, 56,  8, COL.pinkMid);
+      // ✅ FIX: mouse moved UP so it's visible
+      // ===== MOUSE =====
+      const mouseX = 66, mouseY = 58;
+      rect(mouseX,   mouseY,   8, 12, COL.pinkOutline);
+      rect(mouseX+1, mouseY+1, 6, 10, COL.pinkMain);
+      rect(mouseX+3, mouseY+3, 2,  2, COL.pinkLite);
 
-      // Keys (simple)
-      for (let x = 14; x <= 62; x += 6) rect(x,67, 4, 3, COL.pinkLite);
-      for (let x = 16; x <= 60; x += 6) rect(x,71, 4, 3, COL.pinkLite);
-
-      // Space bar
-      rect(26,74, 28, 1, COL.pinkLite);
-
-      // ===== MOUSE + CONNECTED CABLE =====
-      // Draw a continuous “pixel cable” from keyboard right side to mouse
-      // Start near right-top of keyboard and snake down-right
+      // ✅ FIX: cable connected to MONITOR (not keyboard)
+      // Start at monitor right side, snake down to mouse
       const cable = [
-        [63,70],[64,70],[65,70],
-        [66,71],[66,72],
-        [67,73],[67,74],
-        [68,75],[68,76],
-        [69,77],[69,78],
-        [70,79],[70,80]
+        [70, 24],[69,24],[68,24],
+        [68,25],[68,26],[68,27],
+        [67,28],[67,29],
+        [66,30],[66,31],
+        [65,32],[65,33],
+        [64,34],[64,35],
+        [64,36],[65,37],
+        [66,38],[67,39],
+        [68,40],[69,41],
+        [70,42],[70,43],
+        [70,44],[70,45],
+        [70,46],[70,47],
+        [70,48],[70,49],
+        [70,50],[70,51],
+        [70,52],[70,53],
+        [70,54],[70,55],
+        [70,56],[70,57],
+        [70,58] // meets mouse top area
       ];
-      for (const [x,y] of cable) rect(x, y, 1, 1, COL.pinkOutline);
-
-      // Mouse body
-      rect(69,81, 8, 12, COL.pinkOutline);
-      rect(70,82, 6, 10, COL.pinkMain);
-      rect(72,84, 2, 2, COL.pinkLite); // button hint
+      for (const [x,y] of cable){
+        if (x >= 0 && x < W && y >= 0 && y < H) rect(x, y, 1, 1, COL.pinkOutline);
+      }
     }
 
     draw();
 
-    // Optional: change tooltip text on hover (tiny “message pop up” polish)
     const tip = document.getElementById("tip");
     const wrap = document.getElementById("wrap");
+    wrap.addEventListener("mouseenter", () => tip.textContent = "✨ it glows when you hover ✨");
+    wrap.addEventListener("mouseleave", () => tip.textContent = "✨ hover me ✨");
 
-    wrap.addEventListener("mouseenter", () => {
-      tip.textContent = "✨ hey! hover glow unlocked ✨";
-    });
-    wrap.addEventListener("mouseleave", () => {
-      tip.textContent = "hi 👋 click commands above to get in touch";
-    });
-
-    // If the canvas size changes, redraw for crispness (keeps it clean if you tweak P)
-    window.addEventListener("resize", () => draw());
+    window.addEventListener("resize", draw);
   </script>
 </body>
 </html>

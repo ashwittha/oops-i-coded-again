@@ -9,11 +9,53 @@
     body{
       margin:0;
       min-height:100vh;
-      display:grid;
-      place-items:center;
-      background:#f6f4ea; /* ✅ light beige */
+      background:#f6f4ea;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       overflow-x:hidden;
+    }
+
+    /* ===== TOP NAV ===== */
+    header{
+      width:100%;
+      display:flex;
+      justify-content:center;
+      padding:22px 0 10px;
+    }
+
+    nav{
+      display:flex;
+      gap:32px;
+      font-family: "Courier New", Courier, monospace; /* typewriter */
+      font-size:15px;
+    }
+
+    nav a{
+      text-decoration:none;
+      color:#444;
+      position:relative;
+      padding-bottom:4px;
+    }
+
+    nav a::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:0;
+      height:1px;
+      background:#444;
+      transition:width 160ms ease;
+    }
+
+    nav a:hover::after{
+      width:100%;
+    }
+
+    /* ===== MAIN WRAP ===== */
+    .page{
+      min-height:calc(100vh - 80px);
+      display:grid;
+      place-items:center;
     }
 
     .wrap{
@@ -41,8 +83,21 @@
 </head>
 
 <body>
-  <div class="wrap" id="wrap">
-    <canvas id="art" width="560" height="560"></canvas>
+
+  <!-- ===== NAV BAR ===== -->
+  <header>
+    <nav>
+      <a href="https://www.linkedin.com/in/YOUR-LINKEDIN/" target="_blank">LinkedIn</a>
+      <a href="mailto:youremail@email.com">Email</a>
+      <a href="./Your_Resume.pdf" target="_blank">Resume</a>
+    </nav>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="page">
+    <div class="wrap" id="wrap">
+      <canvas id="art" width="560" height="560"></canvas>
+    </div>
   </div>
 
 <script>
@@ -60,7 +115,7 @@
     pinkLite:    "#ffd7ee",
     mintMain:    "#c9fbf5",
     mintLite:    "#e6fffc",
-    beige:       "#f6f4ea", /* ✅ same beige */
+    beige:       "#f6f4ea",
     shadow:      "#f4f4f6",
     text:        "#5f9f98"
   };
@@ -84,10 +139,9 @@
     const W = Math.floor(canvas.width / P);
     const H = Math.floor(canvas.height / P);
 
-    /* background */
     rect(0,0,W,H,COL.beige);
 
-    /* ===== MONITOR ===== */
+    // ===== MONITOR =====
     rect(10,6,60,34,COL.pinkOutline);
     rect(11,7,58,32,COL.pinkMain);
     rect(12,8,56,30,COL.pinkMid);
@@ -96,7 +150,6 @@
     rect(16,12,48,22,COL.pinkMain);
     rect(17,13,46,20,COL.mintLite);
 
-    /* Screen */
     if(isHovering){
       rect(18,14,44,18,"#eafffd");
       ctx.save();
@@ -109,7 +162,6 @@
       rect(18,14,44,18,COL.mintMain);
     }
 
-    /* Screen text */
     if(isHovering){
       ctx.fillStyle = COL.text;
       ctx.font = `${5*P}px monospace`;
@@ -123,7 +175,7 @@
 
     rect(60,13,3,3,"#ffffff");
 
-    /* ===== STAND ===== */
+    // ===== STAND =====
     rect(37,40,6,2,COL.pinkOutline);
     rect(38,41,4,3,COL.pinkMain);
     rect(36,44,8,4,COL.pinkOutline);
@@ -133,23 +185,22 @@
     rect(34,52,12,2,COL.pinkMid);
     rect(35,53,10,2,COL.pinkLite);
 
-    /* ===== KEYBOARD ===== */
+    // ===== KEYBOARD =====
     rect(10,60,60,2,COL.shadow);
     rect(10,52,60,10,COL.pinkOutline);
     rect(11,53,58,8,COL.pinkMain);
     rect(12,54,56,6,COL.pinkMid);
-
     for(let x=14;x<=62;x+=6) rect(x,55,4,2,COL.pinkLite);
     for(let x=16;x<=60;x+=6) rect(x,58,4,2,COL.pinkLite);
     rect(26,60,28,1,COL.pinkLite);
 
-    /* ===== MOUSE ===== */
+    // ===== MOUSE =====
     const mouseX = 66, mouseY = 66;
     rect(mouseX,mouseY,8,12,COL.pinkOutline);
     rect(mouseX+1,mouseY+1,6,10,COL.pinkMain);
     rect(mouseX+3,mouseY+3,2,2,COL.pinkLite);
 
-    /* ===== CABLE ===== */
+    // ===== CABLE =====
     const cable = [
       [70,18],[70,19],[70,20],[70,21],[70,22],[70,23],[70,24],
       [71,25],[72,25],[73,25],
@@ -218,5 +269,6 @@
 
   window.addEventListener("resize", draw);
 </script>
+
 </body>
 </html>

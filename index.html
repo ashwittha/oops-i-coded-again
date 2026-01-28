@@ -7,8 +7,6 @@
   <style>
     :root{
       --bg: #ffffff;
-      --glow: rgba(255, 164, 210, 0.55);
-      --glow2: rgba(180, 245, 240, 0.45);
     }
 
     body{
@@ -18,7 +16,7 @@
       place-items:center;
       background:var(--bg);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      overflow-x:hidden; /* prevents any accidental horizontal overflow */
+      overflow-x:hidden;
     }
 
     .wrap{
@@ -29,9 +27,9 @@
       max-width: 100vw;
     }
 
-    /* ✅ FIX: keep it fitting on screen */
+    /* Keep it fitting on screen */
     canvas{
-      width: min(640px, 92vw);  /* was too big before */
+      width: min(640px, 92vw);
       height: auto;
       image-rendering: pixelated;
       border-radius: 18px;
@@ -40,16 +38,12 @@
       margin: 0 auto;
     }
 
+    /* No global glow—just a tiny lift on hover */
     .wrap:hover canvas{
-      transform: translateY(-2px);
-      animation: pulseGlow 1.25s ease-in-out infinite;
-      box-shadow:
-        0 0 0 2px rgba(255,255,255,0.65),
-        0 16px 48px rgba(0,0,0,0.12),
-        0 0 28px var(--glow),
-        0 0 44px var(--glow2);
+      transform: translateY(-1px);
     }
 
+    /* Pop-up message */
     .tooltip{
       position:absolute;
       left:50%;
@@ -85,20 +79,18 @@
       border-right: 1px solid rgba(255, 179, 220, 0.75);
       border-bottom: 1px solid rgba(255, 179, 220, 0.75);
     }
-
-    @keyframes pulseGlow{
-      0%, 100% { filter: brightness(1.00) saturate(1.03); }
-      50%      { filter: brightness(1.12) saturate(1.08); }
-    }
   </style>
 </head>
+
 <body>
   <div class="wrap" id="wrap">
-    <div class="tooltip" id="tip">✨ hover me ✨</div>
-    <canvas id="art" width="560" height="520"></canvas>
+    <div class="tooltip" id="tip">✨ hover the screen ✨</div>
+    <canvas id="art" width="560" height="560"></canvas>
   </div>
 
   <script>
+    const wrap = document.getElementById("wrap");
+    const tip = document.getElementById("tip");
     const canvas = document.getElementById("art");
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
@@ -117,6 +109,8 @@
       white:       "#ffffff",
       shadow:      "#f4f4f6"
     };
+
+    let isHovering = false;
 
     function rect(x, y, w, h, color){
       ctx.fillStyle = color;
@@ -137,10 +131,27 @@
 
       rect(16,12, 48, 22, COL.pinkMain);  // bezel
       rect(17,13, 46, 20, COL.mintLite);  // screen border
-      rect(18,14, 44, 18, COL.mintMain);  // screen fill (empty)
-      rect(60,13, 3, 3, COL.white);        // little corner button
 
-      // ===== STAND (slightly shorter) =====
+      // ✅ Only the SCREEN glows on hover
+      if (isHovering) {
+        // brighter screen fill
+        rect(18,14, 44, 18, "#eafffd");
+
+        // glow overlay limited to screen area
+        ctx.save();
+        ctx.globalAlpha = 0.55;
+        ctx.shadowColor = "rgba(180, 245, 240, 0.95)";
+        ctx.shadowBlur = 18;
+        ctx.fillStyle = "#eafffd";
+        ctx.fillRect(18 * P, 14 * P, 44 * P, 18 * P);
+        ctx.restore();
+      } else {
+        rect(18,14, 44, 18, COL.mintMain);
+      }
+
+      rect(60,13, 3, 3, COL.white); // corner button
+
+      // ===== STAND =====
       rect(37,40, 6, 2, COL.pinkOutline);
       rect(38,41, 4, 3, COL.pinkMain);
 
@@ -152,8 +163,7 @@
       rect(34,52, 12, 2, COL.pinkMid);
       rect(35,53, 10, 2, COL.pinkLite);
 
-      // ✅ FIX: keyboard moved UP (less space to monitor)
-      // ===== KEYBOARD =====
+      // ===== KEYBOARD (closer to monitor) =====
       rect(10,60, 60, 2, COL.shadow);
       rect(10,52, 60, 10, COL.pinkOutline);
       rect(11,53, 58,  8, COL.pinkMain);
@@ -163,35 +173,28 @@
       for (let x = 16; x <= 60; x += 6) rect(x,58, 4, 2, COL.pinkLite);
       rect(26,60, 28, 1, COL.pinkLite);
 
-      // ✅ FIX: mouse moved UP so it's visible
-      // ===== MOUSE =====
-      const mouseX = 66, mouseY = 58;
+      // ===== MOUSE (moved DOWN and visible) =====
+      const mouseX = 66, mouseY = 66;
       rect(mouseX,   mouseY,   8, 12, COL.pinkOutline);
       rect(mouseX+1, mouseY+1, 6, 10, COL.pinkMain);
       rect(mouseX+3, mouseY+3, 2,  2, COL.pinkLite);
 
-      // ✅ FIX: cable connected to MONITOR (not keyboard)
-      // Start at monitor right side, snake down to mouse
+      // ===== CABLE (curves around the right side, NOT over keyboard) =====
       const cable = [
-        [70, 24],[69,24],[68,24],
-        [68,25],[68,26],[68,27],
-        [67,28],[67,29],
-        [66,30],[66,31],
-        [65,32],[65,33],
-        [64,34],[64,35],
-        [64,36],[65,37],
-        [66,38],[67,39],
-        [68,40],[69,41],
-        [70,42],[70,43],
-        [70,44],[70,45],
-        [70,46],[70,47],
-        [70,48],[70,49],
-        [70,50],[70,51],
-        [70,52],[70,53],
-        [70,54],[70,55],
-        [70,56],[70,57],
-        [70,58] // meets mouse top area
+        // start from monitor right edge area
+        [70, 18],[70, 19],[70, 20],[70, 21],[70, 22],[70, 23],[70, 24],
+        // out to the right (around monitor)
+        [71, 25],[72, 25],[73, 25],
+        // drop down on far right side
+        [73, 26],[73, 27],[73, 28],[73, 29],[73, 30],[73, 31],[73, 32],[73, 33],
+        [73, 34],[73, 35],[73, 36],[73, 37],[73, 38],[73, 39],[73, 40],[73, 41],
+        [73, 42],[73, 43],[73, 44],[73, 45],[73, 46],[73, 47],[73, 48],[73, 49],
+        [73, 50],[73, 51],[73, 52],[73, 53],[73, 54],[73, 55],[73, 56],[73, 57],
+        [73, 58],[73, 59],[73, 60],[73, 61],[73, 62],[73, 63],[73, 64],
+        // hook back toward the mouse
+        [72, 65],[71, 66],[70, 66]
       ];
+
       for (const [x,y] of cable){
         if (x >= 0 && x < W && y >= 0 && y < H) rect(x, y, 1, 1, COL.pinkOutline);
       }
@@ -199,10 +202,17 @@
 
     draw();
 
-    const tip = document.getElementById("tip");
-    const wrap = document.getElementById("wrap");
-    wrap.addEventListener("mouseenter", () => tip.textContent = "✨ it glows when you hover ✨");
-    wrap.addEventListener("mouseleave", () => tip.textContent = "✨ hover me ✨");
+    wrap.addEventListener("mouseenter", () => {
+      isHovering = true;
+      tip.textContent = "✨ the screen glows ✨";
+      draw();
+    });
+
+    wrap.addEventListener("mouseleave", () => {
+      isHovering = false;
+      tip.textContent = "✨ hover the screen ✨";
+      draw();
+    });
 
     window.addEventListener("resize", draw);
   </script>

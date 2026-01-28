@@ -1,1 +1,61 @@
 //This file controls the layout (header, buttons, terminal box)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ashwittha | Contact</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="pfp">A</div>
+      <div>
+        <div class="name">Ashwittha Ganesan</div>
+        <div class="tag">Software Engineer • Builder • Coffee fan ☕️</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Let’s Get In Touch!</h1>
+
+    <div class="nav">
+      <button class="cmd" data-cmd="email">email</button>
+      <span>|</span>
+      <button class="cmd" data-cmd="resume">resume</button>
+      <span>|</span>
+      <button class="cmd" data-cmd="github">github</button>
+      <span>|</span>
+      <button class="cmd" data-cmd="linkedin">linkedin</button>
+      <span>|</span>
+      <button class="cmd" data-cmd="logout">logout</button>
+      <span>|</span>
+      <button class="cmd secret" data-cmd="secret">secret</button>
+    </div>
+
+    <section class="terminal">
+      <div class="terminal-top">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="title">terminal</span>
+      </div>
+
+      <div id="output" class="output"></div>
+
+      <div class="prompt">
+        <span class="path">ashwittha.github.io:~</span>
+        <span class="user"> guest </span>
+        <span class="dollar">$</span>
+        <span class="cursor"></span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2026 Ashwittha</footer>
+  <script src="script.js"></script>
+</body>
+</html>

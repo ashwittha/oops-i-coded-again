@@ -112,7 +112,6 @@
   };
 
   let isHovering = false;
-
   const messages = ["hello world", "welcome"];
   let msgIndex = 0;
   let typedText = "";
@@ -142,7 +141,7 @@
       ctx.textBaseline = "top";
       ctx.fillText(
         typedText + (showCursor ? "▮" : ""),
-        20*P,20*P
+        20*P, 20*P
       );
     }
 
@@ -152,7 +151,7 @@
     rect(36,44,8,4,COL.outline);
     rect(37,45,6,4,COL.mid);
 
-    /* ===== KEYBOARD (moved UP, no gap) ===== */
+    /* ===== KEYBOARD (flush with stand) ===== */
     rect(10,48,60,10,COL.outline);
     rect(11,49,58,8,COL.main);
     rect(12,50,56,6,COL.mid);
@@ -161,27 +160,29 @@
     for(let x=16;x<=60;x+=6) rect(x,54,4,2,COL.lite);
 
     /* ===== MOUSE ===== */
-    const mx=66,my=64;
+    const mx = 66, my = 64;
     rect(mx,my,8,12,COL.outline);
     rect(mx+1,my+1,6,10,COL.main);
     rect(mx+3,my+3,2,2,COL.lite);
 
-    /* ===== MOUSE WIRE (curves around keyboard right side) ===== */
-const wire = [
-  // from mouse up toward the right edge
-  [66,64],[66,63],[67,62],[68,61],[69,60],[70,60],[71,60],
+    /* ===== MOUSE WIRE (clean curve around keyboard right side) ===== */
+    const wire = [
+      // from mouse upward
+      [66,64],[66,63],[67,62],[68,61],[69,60],[70,60],[71,60],
 
-  // hug the OUTSIDE right edge of keyboard (keyboard ends at x=69)
-  [71,59],[71,58],[71,57],[71,56],[71,55],[71,54],[71,53],[71,52],[71,51],[71,50],[71,49],[71,48],
+      // run UP along the OUTSIDE of keyboard (keyboard max x = 69)
+      [71,59],[71,58],[71,57],[71,56],[71,55],[71,54],
+      [71,53],[71,52],[71,51],[71,50],[71,49],[71,48],
 
-  // go ABOVE keyboard (y < 48), then curve left toward the stand
-  [71,47],[70,47],[69,47],[68,47],[67,47],
-  [66,46],[65,46],[64,46],[63,46],[62,46],[61,46],
-  [60,45],[59,45],[58,45],[57,45],[56,45],[55,45],
-  [54,45],[53,45],[52,45],[51,45],[50,45],[49,45],[48,45],[47,45],[46,45],[45,45]
-];
-
-wire.forEach(([x,y]) => rect(x,y,1,1,COL.outline));
+      // move ABOVE keyboard and curve left toward stand
+      [71,47],[70,47],[69,47],[68,47],[67,47],
+      [66,46],[65,46],[64,46],[63,46],[62,46],
+      [61,46],[60,45],[59,45],[58,45],[57,45],
+      [56,45],[55,45],[54,45],[53,45],[52,45],
+      [51,45],[50,45],[49,45],[48,45],[47,45]
+    ];
+    wire.forEach(([x,y]) => rect(x,y,1,1,COL.outline));
+  }
 
   function typeMessage(text){
     let i=0;

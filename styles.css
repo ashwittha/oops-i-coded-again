@@ -1,1 +1,154 @@
 //This controls the design (colors, spacing, terminal look)
+body {
+  margin: 0;
+  font-family: "Courier New", monospace;
+  background: #f6f4ea;
+  color: #222;
+}
+
+.topbar {
+  background: #9a87d8;
+  color: #fff;
+  padding: 18px 22px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pfp {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.25);
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.tag {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 48px 18px;
+}
+
+h1 {
+  font-size: 40px;
+  margin: 0 0 18px;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.nav button {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.nav button:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+.secret {
+  color: #7b2cbf;
+  font-weight: bold;
+}
+
+.terminal {
+  background: #111;
+  color: #eaeaea;
+  border-radius: 18px;
+  padding: 0;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+  overflow: hidden;
+  text-align: left;
+}
+
+.terminal-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #1a1a1a;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.red { background: #ff5f57; }
+.yellow { background: #febc2e; }
+.green { background: #28c840; }
+
+.title {
+  margin-left: 8px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.output {
+  padding: 16px;
+  min-height: 220px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.prompt {
+  padding: 0 16px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.path { color: #9ad1ff; }
+.user { color: #a7ff83; }
+.dollar { color: #fff; }
+
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background: #fff;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.footer {
+  text-align: center;
+  padding: 18px;
+  opacity: 0.7;
+  font-size: 13px;
+}

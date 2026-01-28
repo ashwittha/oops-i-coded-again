@@ -1,143 +1,289 @@
-<script>
-  const wrap = document.getElementById("wrap");
-  const tip = document.getElementById("tip");
-  const canvas = document.getElementById("art");
-  const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingEnabled = false;
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pastel Pixel Computer</title>
+  <style>
+    :root { --bg:#ffffff; }
 
-  const P = 7;
-
-  const COL = {
-    pinkOutline: "#e46aa9",
-    pinkMain:    "#ff93c7",
-    pinkMid:     "#ffb7dd",
-    pinkLite:    "#ffd7ee",
-    mintMain:    "#c9fbf5",
-    mintLite:    "#e6fffc",
-    white:       "#ffffff",
-    shadow:      "#f4f4f6",
-    text:        "#6aa7a1"
-  };
-
-  let isHovering = false;
-  let typedText = "";
-  let typingInterval = null;
-  const fullText = "hello world";
-
-  function rect(x, y, w, h, color){
-    ctx.fillStyle = color;
-    ctx.fillRect(x * P, y * P, w * P, h * P);
-  }
-
-  function draw(){
-    const W = Math.floor(canvas.width / P);
-    const H = Math.floor(canvas.height / P);
-
-    rect(0, 0, W, H, COL.white);
-
-    // ===== MONITOR =====
-    rect(10, 6, 60, 34, COL.pinkOutline);
-    rect(11, 7, 58, 32, COL.pinkMain);
-    rect(12, 8, 56, 30, COL.pinkMid);
-    rect(13, 9, 54, 28, COL.pinkLite);
-
-    rect(16,12, 48, 22, COL.pinkMain);  // bezel
-    rect(17,13, 46, 20, COL.mintLite);  // screen border
-
-    // SCREEN (glow on hover)
-    if (isHovering) {
-      rect(18,14, 44, 18, "#eafffd");
-
-      ctx.save();
-      ctx.shadowColor = "rgba(180,245,240,0.9)";
-      ctx.shadowBlur = 18;
-      ctx.fillStyle = "#eafffd";
-      ctx.fillRect(18 * P, 14 * P, 44 * P, 18 * P);
-      ctx.restore();
-    } else {
-      rect(18,14, 44, 18, COL.mintMain);
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:var(--bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow-x:hidden;
     }
 
-    // Typed text on screen
-    ctx.fillStyle = COL.text;
-    ctx.font = `${5 * P}px monospace`;
-    ctx.textBaseline = "top";
-    ctx.fillText(typedText, 20 * P, 20 * P);
-
-    rect(60,13, 3, 3, COL.white);
-
-    // ===== STAND =====
-    rect(37,40, 6, 2, COL.pinkOutline);
-    rect(38,41, 4, 3, COL.pinkMain);
-    rect(36,44, 8, 4, COL.pinkOutline);
-    rect(37,45, 6, 4, COL.pinkMid);
-    rect(32,50, 16, 2, COL.pinkOutline);
-    rect(33,51, 14, 2, COL.pinkMain);
-    rect(34,52, 12, 2, COL.pinkMid);
-    rect(35,53, 10, 2, COL.pinkLite);
-
-    // ===== KEYBOARD =====
-    rect(10,60, 60, 2, COL.shadow);
-    rect(10,52, 60, 10, COL.pinkOutline);
-    rect(11,53, 58,  8, COL.pinkMain);
-    rect(12,54, 56,  6, COL.pinkMid);
-    for (let x = 14; x <= 62; x += 6) rect(x,55, 4, 2, COL.pinkLite);
-    for (let x = 16; x <= 60; x += 6) rect(x,58, 4, 2, COL.pinkLite);
-    rect(26,60, 28, 1, COL.pinkLite);
-
-    // ===== MOUSE =====
-    const mouseX = 66, mouseY = 66;
-    rect(mouseX,   mouseY,   8, 12, COL.pinkOutline);
-    rect(mouseX+1, mouseY+1, 6, 10, COL.pinkMain);
-    rect(mouseX+3, mouseY+3, 2,  2, COL.pinkLite);
-
-    // ===== CABLE =====
-    const cable = [
-      [70,18],[70,19],[70,20],[70,21],[70,22],[70,23],[70,24],
-      [71,25],[72,25],[73,25],
-      [73,26],[73,27],[73,28],[73,29],[73,30],[73,31],[73,32],[73,33],
-      [73,34],[73,35],[73,36],[73,37],[73,38],[73,39],[73,40],[73,41],
-      [73,42],[73,43],[73,44],[73,45],[73,46],[73,47],[73,48],[73,49],
-      [73,50],[73,51],[73,52],[73,53],[73,54],[73,55],[73,56],[73,57],
-      [73,58],[73,59],[73,60],[73,61],[73,62],[73,63],[73,64],
-      [72,65],[71,66],[70,66]
-    ];
-
-    for (const [x,y] of cable){
-      rect(x, y, 1, 1, COL.pinkOutline);
+    .wrap{
+      position:relative;
+      display:inline-block;
+      padding:14px;
+      border-radius:24px;
+      max-width:100vw;
     }
-  }
 
-  function startTyping(){
-    typedText = "";
-    let i = 0;
-    typingInterval = setInterval(() => {
-      if (i < fullText.length) {
-        typedText += fullText[i++];
-        draw();
+    /* Fit on screen */
+    canvas{
+      width:min(640px, 92vw);
+      height:auto;
+      image-rendering: pixelated;
+      border-radius:18px;
+      transition: transform 180ms ease;
+      display:block;
+      margin:0 auto;
+    }
+
+    /* No global glow—just a tiny lift */
+    .wrap:hover canvas{ transform: translateY(-1px); }
+
+    /* Pop-up message */
+    .tooltip{
+      position:absolute;
+      left:50%;
+      top:0;
+      transform: translate(-50%, -110%);
+      background: rgba(255, 245, 252, 0.95);
+      border: 1px solid rgba(255, 179, 220, 0.75);
+      color:#7a2a55;
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity 160ms ease, transform 160ms ease;
+      white-space:nowrap;
+    }
+    .wrap:hover .tooltip{
+      opacity:1;
+      transform: translate(-50%, -120%);
+    }
+    .tooltip:after{
+      content:"";
+      position:absolute;
+      left:50%;
+      bottom:-7px;
+      transform: translateX(-50%) rotate(45deg);
+      width:12px;
+      height:12px;
+      background: rgba(255, 245, 252, 0.95);
+      border-right: 1px solid rgba(255, 179, 220, 0.75);
+      border-bottom: 1px solid rgba(255, 179, 220, 0.75);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap" id="wrap">
+    <div class="tooltip" id="tip">✨ hover the screen ✨</div>
+    <canvas id="art" width="560" height="560"></canvas>
+  </div>
+
+  <script>
+    const wrap = document.getElementById("wrap");
+    const tip = document.getElementById("tip");
+    const canvas = document.getElementById("art");
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+
+    // Pixel scale (chunkiness)
+    const P = 7;
+
+    // Lighter pastel palette
+    const COL = {
+      pinkOutline: "#e46aa9",
+      pinkMain:    "#ff93c7",
+      pinkMid:     "#ffb7dd",
+      pinkLite:    "#ffd7ee",
+      mintMain:    "#c9fbf5",
+      mintLite:    "#e6fffc",
+      white:       "#ffffff",
+      shadow:      "#f4f4f6",
+      text:        "#5f9f98"
+    };
+
+    let isHovering = false;
+
+    // Typing/cycling state
+    const messages = ["hello world", "welcome", "ashwittha.dev"];
+    let msgIndex = 0;
+    let typedText = "";
+    let typingTimer = null;
+    let cursorTimer = null;
+    let showCursor = true;
+    let cycleTimer = null;
+
+    function rect(x, y, w, h, color){
+      ctx.fillStyle = color;
+      ctx.fillRect(x * P, y * P, w * P, h * P);
+    }
+
+    function draw(){
+      const W = Math.floor(canvas.width / P);
+      const H = Math.floor(canvas.height / P);
+
+      // background
+      rect(0, 0, W, H, COL.white);
+
+      // ===== MONITOR =====
+      rect(10, 6, 60, 34, COL.pinkOutline);
+      rect(11, 7, 58, 32, COL.pinkMain);
+      rect(12, 8, 56, 30, COL.pinkMid);
+      rect(13, 9, 54, 28, COL.pinkLite);
+
+      rect(16,12, 48, 22, COL.pinkMain);  // bezel
+      rect(17,13, 46, 20, COL.mintLite);  // screen border
+
+      // Screen fill (ONLY screen glows on hover)
+      if (isHovering) {
+        rect(18,14, 44, 18, "#eafffd");
+
+        // glow overlay limited to the screen
+        ctx.save();
+        ctx.globalAlpha = 0.55;
+        ctx.shadowColor = "rgba(180,245,240,0.95)";
+        ctx.shadowBlur = 18;
+        ctx.fillStyle = "#eafffd";
+        ctx.fillRect(18 * P, 14 * P, 44 * P, 18 * P);
+        ctx.restore();
       } else {
-        clearInterval(typingInterval);
+        rect(18,14, 44, 18, COL.mintMain);
       }
-    }, 120);
-  }
 
-  function stopTyping(){
-    clearInterval(typingInterval);
-    typedText = "";
+      // Screen text (only meaningful when hovering)
+      if (isHovering) {
+        ctx.save();
+        ctx.fillStyle = COL.text;
+        ctx.font = `${5 * P}px monospace`;
+        ctx.textBaseline = "top";
+
+        const cursor = showCursor ? "▮" : " ";
+        const line = typedText + cursor;
+
+        // Position inside screen
+        ctx.fillText(line, 20 * P, 20 * P);
+        ctx.restore();
+      }
+
+      rect(60,13, 3, 3, COL.white); // little corner button
+
+      // ===== STAND =====
+      rect(37,40, 6, 2, COL.pinkOutline);
+      rect(38,41, 4, 3, COL.pinkMain);
+
+      rect(36,44, 8, 4, COL.pinkOutline);
+      rect(37,45, 6, 4, COL.pinkMid);
+
+      rect(32,50, 16, 2, COL.pinkOutline);
+      rect(33,51, 14, 2, COL.pinkMain);
+      rect(34,52, 12, 2, COL.pinkMid);
+      rect(35,53, 10, 2, COL.pinkLite);
+
+      // ===== KEYBOARD (closer to monitor) =====
+      rect(10,60, 60, 2, COL.shadow);
+      rect(10,52, 60, 10, COL.pinkOutline);
+      rect(11,53, 58,  8, COL.pinkMain);
+      rect(12,54, 56,  6, COL.pinkMid);
+
+      for (let x = 14; x <= 62; x += 6) rect(x,55, 4, 2, COL.pinkLite);
+      for (let x = 16; x <= 60; x += 6) rect(x,58, 4, 2, COL.pinkLite);
+      rect(26,60, 28, 1, COL.pinkLite);
+
+      // ===== MOUSE (moved DOWN, visible) =====
+      const mouseX = 66, mouseY = 66;
+      rect(mouseX,   mouseY,   8, 12, COL.pinkOutline);
+      rect(mouseX+1, mouseY+1, 6, 10, COL.pinkMain);
+      rect(mouseX+3, mouseY+3, 2,  2, COL.pinkLite);
+
+      // ===== CABLE (curves around right side, NOT over keyboard) =====
+      const cable = [
+        // start from monitor right edge area
+        [70,18],[70,19],[70,20],[70,21],[70,22],[70,23],[70,24],
+        // out to the right (around monitor)
+        [71,25],[72,25],[73,25],
+        // drop down far right side
+        [73,26],[73,27],[73,28],[73,29],[73,30],[73,31],[73,32],[73,33],
+        [73,34],[73,35],[73,36],[73,37],[73,38],[73,39],[73,40],[73,41],
+        [73,42],[73,43],[73,44],[73,45],[73,46],[73,47],[73,48],[73,49],
+        [73,50],[73,51],[73,52],[73,53],[73,54],[73,55],[73,56],[73,57],
+        [73,58],[73,59],[73,60],[73,61],[73,62],[73,63],[73,64],
+        // hook back toward the mouse
+        [72,65],[71,66],[70,66]
+      ];
+      for (const [x,y] of cable) rect(x, y, 1, 1, COL.pinkOutline);
+    }
+
+    function clearTimers(){
+      if (typingTimer) { clearInterval(typingTimer); typingTimer = null; }
+      if (cursorTimer) { clearInterval(cursorTimer); cursorTimer = null; }
+      if (cycleTimer)  { clearInterval(cycleTimer);  cycleTimer  = null; }
+    }
+
+    function typeMessage(text){
+      // stop any active typing
+      if (typingTimer) { clearInterval(typingTimer); typingTimer = null; }
+      typedText = "";
+      let i = 0;
+
+      typingTimer = setInterval(() => {
+        if (!isHovering) { clearInterval(typingTimer); typingTimer = null; return; }
+        if (i < text.length) {
+          typedText += text[i++];
+          draw();
+        } else {
+          clearInterval(typingTimer);
+          typingTimer = null;
+        }
+      }, 110);
+    }
+
+    function startCursorBlink(){
+      if (cursorTimer) return;
+      showCursor = true;
+      cursorTimer = setInterval(() => {
+        if (!isHovering) return;
+        showCursor = !showCursor;
+        draw();
+      }, 450);
+    }
+
+    function startCycling(){
+      // cycles messages every ~2.6s, and re-types each
+      if (cycleTimer) return;
+      cycleTimer = setInterval(() => {
+        if (!isHovering) return;
+        msgIndex = (msgIndex + 1) % messages.length;
+        typeMessage(messages[msgIndex]);
+      }, 2600);
+    }
+
+    // Initial render
     draw();
-  }
 
-  draw();
+    wrap.addEventListener("mouseenter", () => {
+      isHovering = true;
+      tip.textContent = "✨ screen glow + typing ✨";
+      msgIndex = 0;
+      showCursor = true;
+      typeMessage(messages[msgIndex]);
+      startCursorBlink();
+      startCycling();
+      draw();
+    });
 
-  wrap.addEventListener("mouseenter", () => {
-    isHovering = true;
-    tip.textContent = "✨ hello world ✨";
-    startTyping();
-  });
+    wrap.addEventListener("mouseleave", () => {
+      isHovering = false;
+      tip.textContent = "✨ hover the screen ✨";
+      clearTimers();
+      typedText = "";
+      showCursor = true;
+      draw();
+    });
 
-  wrap.addEventListener("mouseleave", () => {
-    isHovering = false;
-    tip.textContent = "✨ hover the screen ✨";
-    stopTyping();
-  });
-</script>
+    window.addEventListener("resize", draw);
+  </script>
+</body>
+</html>
